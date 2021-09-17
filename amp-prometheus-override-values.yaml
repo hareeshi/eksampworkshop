@@ -1,0 +1,20 @@
+nodeExporter:
+    enabled: false
+
+alertmanager:
+    enabled: false
+
+serviceAccounts:
+    server:
+        create: false
+        name: "iamproxy-amp"
+
+server:
+    persistentVolume:
+        enabled: false
+    remoteWrite:
+        - url: https://aps-workspaces.$AWS_REGION.amazonaws.com/workspaces/$AMP_WORKSPACE_ID/api/v1/remote_write
+          sigv4:
+            region: $AWS_REGION
+            
+

@@ -121,6 +121,7 @@ metadata:
 EOF
 echo "${SERVICE_ACCOUNT}" > sa-amp.yaml
 
+kubectl create ns prometheus
 kubectl apply -f sa-amp.yaml
 
 

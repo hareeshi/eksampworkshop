@@ -1,5 +1,5 @@
 ##!/bin/bash
-CLUSTER_NAME=EKS_CLUSTER_NAME
+CLUSTER_NAME=eks-fargate-amp
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 OIDC_PROVIDER=$(aws eks describe-cluster --name $CLUSTER_NAME --query "cluster.identity.oidc.issuer" --output text | sed -e "s/^https:\/\///")
 
@@ -121,9 +121,14 @@ metadata:
 EOF
 echo "${SERVICE_ACCOUNT}" > sa-amp.yaml
 
+# Create a namespace for Prometheus monitoring components
 kubectl create ns prometheus
+
+#Create the service account
 kubectl apply -f sa-amp.yaml
 
+#Create a Fargate profile to make sure that the metrics collectors running in Prometheus namespace can run on Fargate nodes.
+eksctl create fargateprofile --cluster $CLUSTER_NAME --namespace prometheus
 
 # EKS cluster hosts an OIDC provider with a public discovery endpoint.
 # Associate this Idp with AWS IAM so that the latter can validate and accept the OIDC tokens issued by Kubernetes to service accounts.
